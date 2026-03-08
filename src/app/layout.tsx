@@ -23,7 +23,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ro" className="dark">
+    <html lang="ro" className="dark" suppressHydrationWarning>
       <body
         className={`${inter.variable} ${cinzel.variable} antialiased`}
       >

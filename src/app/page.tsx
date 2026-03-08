@@ -8,15 +8,27 @@ import { Label } from "@/components/ui/label";
 import Image from "next/image";
 
 // --- EXPANSIUNEA DICȚIONARULUI DACIC ---
-const ANIMALS = ["Lupul", "Vulturul", "Ursul", "Șoimul", "Corbul", "Zimbrul", "Mistrețul", "Cerbul", "Dragonul", "Șarpele"];
+const ANIMALS_M = ["Lupul", "Vulturul", "Ursul", "Șoimul", "Corbul", "Zimbrul", "Mistrețul", "Cerbul", "Dragonul", "Șarpele"];
+const ANIMALS_F = ["Lupoaica", "Acvila", "Ursoaica", "Șoimița", "Corboaica", "Zimbroaica", "Căprioara", "Vipera", "Privighetoarea", "Lebăda"];
+
 const WEAPONS = ["Falxul", "Sica Măiestră", "Scutul", "Spada", "Spărgătorul", "Lancea", "Arcul", "Stindardul", "Buzduganul"];
-const ADJECTIVES = ["Nemuritorul", "Neînfricatul", "Viteazul", "Cel Liber", "Fiorosul", "Sângerosul", "Înțeleptul", "Grozavul", "Întunecatul", "Strălucitorul", "Cel Cumplit", "Cel Drept", "Neadormitul"];
+
+const ADJECTIVES_M = ["Nemuritorul", "Neînfricatul", "Viteazul", "Cel Liber", "Fiorosul", "Sângerosul", "Înțeleptul", "Grozavul", "Întunecatul", "Strălucitorul", "Cel Cumplit", "Cel Drept", "Neadormitul"];
+const ADJECTIVES_F = ["Nemuritoarea", "Neînfricata", "Viteaza", "Cea Liberă", "Fioroasa", "Sângeroasa", "Înțeleapta", "Grozava", "Întunecata", "Strălucitoarea", "Cea Cumplită", "Cea Dreaptă", "Neadormita"];
+
 const MATERIALS = ["de Aur", "de Fier", "de Argint", "de Bronz", "de Piatră", "de Foc", "de Oțel"];
-const NATURE = ["al Pădurilor", "al Munților", "din Carpați", "al Umbrelor", "al Zorilor", "al Furtunii", "al Nordului", "al Negurii"];
-const HISTORIC = ["Decebal", "Burebista", "Cotiso", "Dicomes", "Oroles", "Rubobostes", "Scorilo", "Duras", "Vezina", "Zia", "Medos", "Diurpaneus", "Comosicus", "Deceneu", "Thiamarkos", "Pieporus", "Zyax"];
+
+const NATURE = ["Pădurilor", "Munților", "din Carpați", "Umbrelor", "Zorilor", "Furtunii", "Nordului", "Negurii"];
+
+const HISTORIC_M = ["Decebal", "Burebista", "Cotiso", "Dicomes", "Oroles", "Rubobostes", "Scorilo", "Duras", "Vezina", "Diurpaneus", "Comosicus", "Deceneu", "Thiamarkos", "Pieporus", "Zyax"];
+const HISTORIC_F = ["Zia", "Dochia", "Meda", "Andrada", "Dacidava", "Sargetia", "Zina", "Zamolxa", "Bendisa"];
+
 const GODS = ["Zalmoxis", "Gebeleizis", "Bendis", "Derzelas", "Pleistoros"];
+
 const CITIES = ["Sarmizegetusa", "Apulum", "Napoca", "Potaissa", "Buridava", "Cumidava", "Pelendava", "Sucidava", "Argedava", "Ziridava", "Singidava"];
-const ROLES = ["Tarabostes", "Comati", "Pileati", "Preot", "Războinic", "Căpetenie", "Străjer", "Oracol"];
+
+const ROLES_M = ["Preotul", "Războinicul", "Căpetenia", "Străjerul", "Oracolul", "Fiul"];
+const ROLES_F = ["Preoteasa", "Războinica", "Căpetenia", "Străjera", "Zeița", "Fiica"];
 
 function getRandom(arr: string[]): string {
   return arr[Math.floor(Math.random() * arr.length)];
@@ -25,9 +37,30 @@ function getRandom(arr: string[]): string {
 export default function Home() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [gender, setGender] = useState<"M" | "F">("M");
   const [nickname, setNickname] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const handleFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const v = e.target.value;
+    setFirstName(v);
+    
+    const n = v.trim().toLowerCase();
+    if (n.length > 2) {
+      const maleExceptions = ["luca", "sava", "horea", "horia", "toma", "mircea", "nea", "badea", "mitica", "costica", "nelu"];
+      const femaleExceptions = ["carmen", "beatrice", "iris", "ingrid", "astrid"];
+      if (femaleExceptions.includes(n)) {
+        setGender("F");
+      } else if (maleExceptions.includes(n)) {
+        setGender("M");
+      } else if (n.endsWith("a")) {
+        setGender("F");
+      } else {
+        setGender("M");
+      }
+    }
+  };
 
   const handleGenerate = () => {
     if (!firstName || !lastName) return;
@@ -48,30 +81,32 @@ export default function Home() {
       const fName = firstName.trim();
       const lName = lastName.trim();
 
+      const isMale = gender === "M";
+
       switch (formatType) {
         case 0:
-          generatedName = `${fName} "${getRandom(ANIMALS)} ${getRandom(MATERIALS)}"`;
+          generatedName = `${fName} "${getRandom(isMale ? ANIMALS_M : ANIMALS_F)} ${getRandom(MATERIALS)}"`;
           break;
         case 1:
-          generatedName = `${getRandom(HISTORIC)} zis și ${fName} ${getRandom(ADJECTIVES)}`;
+          generatedName = `${getRandom(isMale ? HISTORIC_M : HISTORIC_F)} ${isMale ? 'zis și' : 'zisă și'} ${fName} ${getRandom(isMale ? ADJECTIVES_M : ADJECTIVES_F)}`;
           break;
         case 2:
-          generatedName = `${lName}, Fiu de ${getRandom(HISTORIC)} din ${getRandom(CITIES)}`;
+          generatedName = `${lName}, ${isMale ? 'Fiu' : 'Fiică'} de ${getRandom(isMale ? HISTORIC_M : HISTORIC_F)} din ${getRandom(CITIES)}`;
           break;
         case 3:
-          generatedName = `${fName} ${getRandom(ROLES)} al lui ${getRandom(GODS)}`;
+          generatedName = `${fName}, ${getRandom(isMale ? ROLES_M : ROLES_F)} lui ${getRandom(GODS)}`;
           break;
         case 4:
           generatedName = `"${getRandom(WEAPONS)} ${getRandom(NATURE)}" (${fName} ${lName})`;
           break;
         case 5:
-          generatedName = `${fName} ${getRandom(ADJECTIVES)} din neamul ${getRandom(CITIES)}`;
+          generatedName = `${fName} ${getRandom(isMale ? ADJECTIVES_M : ADJECTIVES_F)} din neamul ${getRandom(CITIES)}`;
           break;
         case 6:
-          generatedName = `${lName} ${getRandom(ANIMALS)} ${getRandom(NATURE)}`;
+          generatedName = `${lName} ${getRandom(isMale ? ANIMALS_M : ANIMALS_F)} ${getRandom(NATURE)}`;
           break;
         case 7:
-          generatedName = `${getRandom(HISTORIC)} "${getRandom(ADJECTIVES)}" ${lName}`;
+          generatedName = `${getRandom(isMale ? HISTORIC_M : HISTORIC_F)} "${getRandom(isMale ? ADJECTIVES_M : ADJECTIVES_F)}" ${lName}`;
           break;
       }
 
@@ -122,7 +157,7 @@ export default function Home() {
                 id="firstName" 
                 placeholder="Ex: Ion" 
                 value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
+                onChange={handleFirstNameChange}
                 className="bg-black/50 border-white/10 text-white placeholder:text-stone-600 h-14 text-lg focus-visible:ring-amber-500/50 focus-visible:border-amber-500/50 transition-all rounded-xl"
               />
             </div>
@@ -136,6 +171,26 @@ export default function Home() {
                 onChange={(e) => setLastName(e.target.value)}
                 className="bg-black/50 border-white/10 text-white placeholder:text-stone-600 h-14 text-lg focus-visible:ring-amber-500/50 focus-visible:border-amber-500/50 transition-all rounded-xl"
               />
+            </div>
+
+            <div className="space-y-3 pt-2">
+              <Label className="text-stone-400 uppercase tracking-widest text-xs font-bold transition-colors">Alege Genul Spiritual</Label>
+              <div className="flex gap-4">
+                <Button 
+                  variant="outline"
+                  className={`flex-1 h-12 text-sm uppercase tracking-wider font-bold transition-all duration-300 ${gender === 'M' ? 'bg-amber-600/20 text-amber-500 border-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.2)]' : 'bg-black/50 border-white/10 text-stone-500 hover:text-stone-300 hover:border-white/20'}`}
+                  onClick={(e) => { e.preventDefault(); setGender('M'); }}
+                >
+                  Războinic (M)
+                </Button>
+                <Button 
+                  variant="outline"
+                  className={`flex-1 h-12 text-sm uppercase tracking-wider font-bold transition-all duration-300 ${gender === 'F' ? 'bg-amber-600/20 text-amber-500 border-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.2)]' : 'bg-black/50 border-white/10 text-stone-500 hover:text-stone-300 hover:border-white/20'}`}
+                  onClick={(e) => { e.preventDefault(); setGender('F'); }}
+                >
+                  Zeiță (F)
+                </Button>
+              </div>
             </div>
             
             <Button 
