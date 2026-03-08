@@ -15,6 +15,19 @@ const cinzel = Cinzel({
 export const metadata: Metadata = {
   title: "Porecle Dacice - Descoperă-ți numele",
   description: "Află care este numele tău de dac liber inspirat din istorie și mitologie.",
+  openGraph: {
+    title: "Porecle Dacice - Descoperă-ți numele",
+    description: "Află care este numele tău de dac liber inspirat din istorie și mitologie.",
+    url: "https://nickname-dacic.vercel.app/",
+    siteName: "Porecle Dacice",
+    locale: "ro_RO",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Porecle Dacice - Descoperă-ți numele",
+    description: "Află care este numele tău de dac liber inspirat din istorie și mitologie.",
+  },
 };
 
 export default function RootLayout({
